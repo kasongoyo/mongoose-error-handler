@@ -21,9 +21,6 @@
         };
 
         let handleValidationError = (error, next) => {
-            if (error.name !== 'ValidationError') {
-                return error;
-            }
             let errorData = '';
             Object.keys(error.errors).forEach(key => {
                 errorData += `${error.errors[key].message};`;
@@ -34,6 +31,15 @@
             next(customError);
         };
 
+        let handleCastError = (error, next) => {
+            const customError = new VError({
+                name: 'ValidationError',
+                cause: error
+            }, `Validation fails at path ${error.path}`);
+            next(error);
+        }
+
+
         let handleError = (error, res, next) => {
             switch (error.name) {
                 case 'MongoError':
@@ -41,6 +47,9 @@
                     break;
                 case 'ValidationError':
                     handleValidationError(error, next);
+                    break;
+                case 'CastError':
+                    handleCastError(error, next);
                     break;
                 default:
                     next(error);
