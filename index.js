@@ -36,7 +36,7 @@
                 name: 'ValidationError',
                 cause: error
             }, `Validation fails at path ${error.path}`);
-            next(error);
+            next(customError);
         }
 
 
